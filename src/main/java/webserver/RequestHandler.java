@@ -4,17 +4,20 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 
+import model.HttpRequest;
+import model.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.RequestParser;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-
+    private UserService userService;
     private Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
+        this.userService = new UserService();
     }
 
     public void run() {
@@ -23,14 +26,31 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            String path = RequestParser.getPath(br.readLine());
-            byte[] body = Files.readAllBytes(new File("./webapp" + path).toPath());
+            HttpRequest request = RequestParser.parseRequestStartLine(br.readLine());
+            HttpResponse response = new HttpResponse();
+            mapHandler(request, response);
             DataOutputStream dos = new DataOutputStream(out);
-            response200Header(dos, body.length);
-            responseBody(dos, body);
+            response200Header(dos, response.getBody().length);
+            responseBody(dos, response.getBody());
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    public void mapHandler(HttpRequest request, HttpResponse response) throws IOException {
+        if (request.getPath().equals("/user/create")) {
+            createUser(request, response);
+        }
+        if (request.getPath().equals("/index.html") || request.getPath().equals("/user/form.html")) {
+            response.setBody(Files.readAllBytes(new File("./webapp" + request.getPath()).toPath()));
+        } else {
+            response.setBody(Files.readAllBytes(new File("./webapp" + request.getPath()).toPath()));
+        }
+    }
+
+    public void createUser(HttpRequest request, HttpResponse response) {
+        response.setBody(userService.addUser(request.getParams()).toString().getBytes());
+        System.out.println(userService.addUser(request.getParams()).toString());
     }
 
     private void printRequest(InputStream in) throws UnsupportedEncodingException, IOException {
