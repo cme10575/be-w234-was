@@ -3,9 +3,12 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 
 import model.HttpRequest;
 import model.HttpResponse;
+import model.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.RequestParser;
@@ -30,27 +33,49 @@ public class RequestHandler implements Runnable {
             HttpResponse response = new HttpResponse();
             mapHandler(request, response);
             DataOutputStream dos = new DataOutputStream(out);
-            response200Header(dos, response.getBody().length);
-            responseBody(dos, response.getBody());
+            send(dos, response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    public void mapHandler(HttpRequest request, HttpResponse response) throws IOException {
+    private void mapHandler(HttpRequest request, HttpResponse response) throws IOException {
         if (request.getPath().equals("/user/create")) {
             createUser(request, response);
         }
-        if (request.getPath().equals("/index.html") || request.getPath().equals("/user/form.html")) {
-            response.setBody(Files.readAllBytes(new File("./webapp" + request.getPath()).toPath()));
-        } else {
-            response.setBody(Files.readAllBytes(new File("./webapp" + request.getPath()).toPath()));
+        else if (request.getPath().matches("(.*).css")) {
+            getCssFile(request, response);
         }
+        else if (request.getPath().matches("(.*).html")){
+            getTextFile(request, response);
+        } else {
+            throw new RuntimeException(HttpStatus.BAD_REQUEST.getMessage());
+        }
+        response.setStatus(HttpStatus.OK);
     }
 
-    public void createUser(HttpRequest request, HttpResponse response) {
+    private void createUser(HttpRequest request, HttpResponse response) {
         response.setBody(userService.addUser(request.getParams()).toString().getBytes());
-        System.out.println(userService.addUser(request.getParams()).toString());
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "text/html;charset=utf-8");
+        headers.put("Content-Length", String.valueOf(response.getBody().length));
+        response.setHeaders(headers);
+    }
+
+    private void getTextFile(HttpRequest request, HttpResponse response) throws IOException {
+        response.setBody(Files.readAllBytes(new File("./webapp" + request.getPath()).toPath()));
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "text/html;charset=utf-8");
+        headers.put("Content-Length", String.valueOf(response.getBody().length));
+        response.setHeaders(headers);
+    }
+
+    private void getCssFile(HttpRequest request, HttpResponse response) throws IOException {
+        response.setBody(Files.readAllBytes(new File("./webapp" + request.getPath()).toPath()));
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "text/css;charset=utf-8");
+        headers.put("Content-Length", String.valueOf(response.getBody().length));
+        response.setHeaders(headers);
     }
 
     private void printRequest(InputStream in) throws UnsupportedEncodingException, IOException {
@@ -62,6 +87,21 @@ public class RequestHandler implements Runnable {
             if (line == null) {
                 return;
             }
+        }
+    }
+
+    private void send(DataOutputStream dos, HttpResponse response) {
+        try {
+            dos.writeBytes("HTTP/1.1 " + response.getStatus().getCode() + " " + response.getStatus().getMessage() + " \r\n");
+            Map<String, String> headers = response.getHeaders();
+            for (var header : headers.entrySet()) {
+                dos.writeBytes(header.getKey() + ": " + header.getValue() + "\r\n");
+            }
+            dos.writeBytes("\r\n");
+            dos.write(response.getBody(), 0, response.getBody().length);
+            dos.flush();
+        } catch (IOException e) {
+            logger.error(e.getMessage());
         }
     }
 
