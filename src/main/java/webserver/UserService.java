@@ -6,12 +6,10 @@ import model.User;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class UserService {
-    private ArrayList<User> users;
+public class UserService { //todo: 싱글톤으로 변경
+    private static ArrayList<User> users = new ArrayList<>();
 
-    public UserService() {
-        users = new ArrayList<>();
-    }
+    public UserService() {}
 
     public User addUser(Map<String, String> params) {
         for (User user: users) {
