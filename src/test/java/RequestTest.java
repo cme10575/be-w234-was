@@ -2,10 +2,14 @@ import exception.HttpErrorMessage;
 import exception.HttpException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import util.RequestParser;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -18,23 +22,21 @@ public class RequestTest {
         assertThat(RequestParser.parseRequestStartLine("GET /index.html HTTP/1.1").getPath()).isEqualTo("/index.html");
     }
 
-    @Test
-    @DisplayName("빈 url 검증")
-    void verifyEmptyUrl() {
-        assertThatThrownBy(() -> {
-            RequestParser.parseRequestStartLine("");
-        }).isInstanceOf(HttpException.class).hasMessageContaining(HttpErrorMessage.EMPTY_REQUEST.getMessage());
-        assertThatThrownBy(() -> {
-            RequestParser.parseRequestStartLine(null);
-        }).isInstanceOf(HttpException.class).hasMessageContaining(HttpErrorMessage.EMPTY_REQUEST.getMessage());
+    private static Stream<Arguments> urlParameters() {
+        return Stream.of(
+                Arguments.of("빈 url 검증", "", HttpErrorMessage.EMPTY_REQUEST),
+                Arguments.of("null url 검증", null, HttpErrorMessage.EMPTY_REQUEST),
+                Arguments.of("잘못된 url 검증", "GET", HttpErrorMessage.INVALID_REQUEST)
+        );
     }
 
-    @Test
-    @DisplayName("잘못된 url 검증")
-    void verifyInvalidUrl() {
+    @ParameterizedTest(name = "{index}: {0}")
+    @MethodSource("urlParameters")
+    @DisplayName("url 검사")
+    void verifyUrl(String testName, String firstLine, HttpErrorMessage message) {
         assertThatThrownBy(() -> {
-            RequestParser.parseRequestStartLine("GET");
-        }).isInstanceOf(HttpException.class).hasMessageContaining(HttpErrorMessage.INVALID_REQUEST.getMessage());
+            RequestParser.parseRequestStartLine(firstLine);
+        }).isInstanceOf(HttpException.class).hasMessageContaining(message.getMessage());
     }
 
     @Test
