@@ -1,4 +1,4 @@
-package webserver;
+package Service;
 
 import exception.UserErrorMessage;
 import model.User;
