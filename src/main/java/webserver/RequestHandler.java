@@ -6,6 +6,9 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import Service.UserService;
+import exception.HttpErrorMessage;
+import exception.HttpException;
 import model.HttpRequest;
 import model.HttpResponse;
 import model.HttpStatus;
@@ -29,29 +32,35 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            HttpRequest request = RequestParser.parseRequestStartLine(br.readLine());
-            HttpResponse response = new HttpResponse();
-            mapHandler(request, response);
             DataOutputStream dos = new DataOutputStream(out);
-            send(dos, response);
+
+            HttpRequest request = RequestParser.parseRequestStartLine(br.readLine());
+            HttpResponse response = new HttpResponse(dos);
+            mapHandler(request, response);
+            response.send();
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
     private void mapHandler(HttpRequest request, HttpResponse response) throws IOException {
-        if (request.getPath().equals("/user/create")) {
-            createUser(request, response);
+        try {
+            if (request.getPath().equals("/user/create")) {
+                createUser(request, response);
+            } else if (request.getPath().matches("(.*).css")) {
+                getCssFile(request, response);
+            } else if (request.getPath().matches("(.*).html")) {
+                getTextFile(request, response);
+            } else {
+                response.setErrorResponse(HttpErrorMessage.INVALID_REQUEST.getStatus(), HttpErrorMessage.INVALID_REQUEST.getMessage());
+                return;
+            }
+            response.setStatus(HttpStatus.OK);
+        } catch (HttpException e) {
+            response.setErrorResponse(e.getErrorMessage().getStatus(),e.getErrorMessage().getMessage());
+        } catch (RuntimeException e) {
+            response.setErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        else if (request.getPath().matches("(.*).css")) {
-            getCssFile(request, response);
-        }
-        else if (request.getPath().matches("(.*).html")){
-            getTextFile(request, response);
-        } else {
-            throw new RuntimeException(HttpStatus.BAD_REQUEST.getMessage());
-        }
-        response.setStatus(HttpStatus.OK);
     }
 
     private void createUser(HttpRequest request, HttpResponse response) {
@@ -87,41 +96,6 @@ public class RequestHandler implements Runnable {
             if (line == null) {
                 return;
             }
-        }
-    }
-
-    private void send(DataOutputStream dos, HttpResponse response) {
-        try {
-            dos.writeBytes("HTTP/1.1 " + response.getStatus().getCode() + " " + response.getStatus().getMessage() + " \r\n");
-            Map<String, String> headers = response.getHeaders();
-            for (var header : headers.entrySet()) {
-                dos.writeBytes(header.getKey() + ": " + header.getValue() + "\r\n");
-            }
-            dos.writeBytes("\r\n");
-            dos.write(response.getBody(), 0, response.getBody().length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
         }
     }
 }
