@@ -78,6 +78,7 @@ public class RequestParser {
         br.read(cbuf);
 
         bodyDatas = parseParams(String.copyValueOf(cbuf));
+        logger.debug("body: {}", bodyDatas);
         request.setBody(bodyDatas);
     }
 
