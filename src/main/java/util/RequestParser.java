@@ -43,6 +43,7 @@ public class RequestParser {
         logger.debug("method : {}", token[0]);
         logger.debug("url : {}", token[1]);
         String[] urlToken = splitPathAndParams(token[1]);
+        request.setPath(urlToken[0]);
 
         Map<String, String> params;
         if (urlToken.length > 1)
@@ -85,7 +86,8 @@ public class RequestParser {
         String[] pairs = query.split("&");
         for (String pair : pairs) {
             int idx = pair.indexOf("=");
-            params.put(pair.substring(0, idx), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+            if (idx != -1)
+                params.put(pair.substring(0, idx), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
         }
         return params;
     }
