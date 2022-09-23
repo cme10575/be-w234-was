@@ -49,9 +49,10 @@ public class UserController implements Controller {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "text/html;charset=utf-8");
         headers.put("Content-Length", String.valueOf(body.length));
+        headers.put("Location", "/index.html");
 
         return HttpResponse.builder()
-                .status(HttpStatus.OK)
+                .status(HttpStatus.MOVED_TEMPORARILY)
                 .headers(headers)
                 .body(body)
                 .build();
