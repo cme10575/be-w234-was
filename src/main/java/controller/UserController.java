@@ -25,7 +25,8 @@ public class UserController implements Controller {
         if (request.getPath().equals("/user/create")) {
             if (request.getMethod().equals(HttpMethod.GET)) return  createUserByGet(request);
             if (request.getMethod().equals(HttpMethod.POST)) return createUserByPost(request);
-        }
+        } else if (request.getPath().equals("/user/login"))
+            if (request.getMethod().equals(HttpMethod.POST)) return loginUserByPost(request);
         throw new HttpException(HttpErrorMessage.INVALID_REQUEST);
     }
 
@@ -54,5 +55,32 @@ public class UserController implements Controller {
                 .headers(headers)
                 .body(body)
                 .build();
+    }
+
+    private HttpResponse loginUserByPost(HttpRequest request) {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "text/html;charset=utf-8");
+
+        try {
+            byte[] body = userService.login(request.getBody()).toString().getBytes();
+            headers.put("Content-Length", String.valueOf(body.length));
+            headers.put("Set-Cookie", "logined=true; Path=/");
+            headers.put("Location", "/index.html");
+            return HttpResponse.builder()
+                    .status(HttpStatus.MOVED_TEMPORARILY)
+                    .headers(headers)
+                    .body(body)
+                    .build();
+        } catch (RuntimeException e) {
+            byte[] body = e.getMessage().getBytes();
+            headers.put("Location", "/user/login_failed.html");
+            headers.put("Content-Length", String.valueOf(body.length));
+            headers.put("Set-Cookie", "logined=false;");
+            return HttpResponse.builder()
+                    .status(HttpStatus.MOVED_TEMPORARILY)
+                    .headers(headers)
+                    .body(body)
+                    .build();
+        }
     }
 }
