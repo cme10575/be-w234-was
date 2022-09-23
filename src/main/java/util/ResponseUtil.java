@@ -4,9 +4,7 @@ import model.HttpResponse;
 import model.HttpStatus;
 
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
