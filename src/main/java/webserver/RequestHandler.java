@@ -1,21 +1,25 @@
 package webserver;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 
+import controller.Controller;
+import exception.HttpException;
+import model.HttpRequest;
+import model.HttpResponse;
+import model.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.RequestParser;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-
     private Socket connection;
+    private HandlerMapper handlerMapper;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
+        this.handlerMapper = new HandlerMapper();
     }
 
     public void run() {
@@ -23,33 +27,26 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "Hello World".getBytes();
-            response200Header(dos, body.length);
-            responseBody(dos, body);
+
+            HttpRequest request = RequestParser.parseRequestStartLine(br.readLine());
+            HttpResponse response = new HttpResponse(dos);
+            process(request, response);
+            response.send();
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void process(HttpRequest request, HttpResponse response) throws IOException {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+            Controller controller = handlerMapper.findHandler(request);
+            controller.map(request, response);
+        } catch (HttpException e) {
+            response.setErrorResponse(e.getErrorMessage().getStatus(), e.getErrorMessage().getMessage());
+        } catch (RuntimeException e) {
+            response.setErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 }
