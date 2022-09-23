@@ -30,7 +30,7 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             DataOutputStream dos = new DataOutputStream(out);
 
-            HttpRequest request = RequestParser.parseRequestStartLine(br.readLine());
+            HttpRequest request = RequestParser.parseRequest(br);
             HttpResponse response = new HttpResponse(dos);
             process(request, response);
             response.send();
