@@ -1,5 +1,7 @@
 package controller;
 
+import exception.HttpErrorMessage;
+import exception.HttpException;
 import model.HttpRequest;
 import model.HttpResponse;
 import model.HttpStatus;
@@ -11,33 +13,43 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FileController implements Controller {
-
     @Override
-    public void map(HttpRequest request, HttpResponse response) throws IOException {
+    public HttpResponse map(HttpRequest request) throws IOException {
         if (request.getPath().matches("(.*).css")) {
-            getCssFile(request, response);
+            return getCssFile(request);
         } else if (request.getPath().matches("(.*).html")) {
-            getTextFile(request, response);
+            return getTextFile(request);
         } else if (request.getPath().matches("(.*).js")) {
-            getTextFile(request, response);
+            return getTextFile(request);
+        } else {
+            throw new HttpException(HttpErrorMessage.INVALID_REQUEST);
         }
     }
 
-    private void getTextFile(HttpRequest request, HttpResponse response) throws IOException {
-        response.setBody(Files.readAllBytes(new File("./webapp" + request.getPath()).toPath()));
+    private HttpResponse getTextFile(HttpRequest request) throws IOException {
+        byte[] body = Files.readAllBytes(new File("./webapp" + request.getPath()).toPath());
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "text/html;charset=utf-8");
-        headers.put("Content-Length", String.valueOf(response.getBody().length));
-        response.setHeaders(headers);
-        response.setStatus(HttpStatus.OK);
+        headers.put("Content-Length", String.valueOf(body.length));
+
+        return HttpResponse.builder()
+                .status(HttpStatus.OK)
+                .headers(headers)
+                .body(body)
+                .build();
     }
 
-    private void getCssFile(HttpRequest request, HttpResponse response) throws IOException {
-        response.setBody(Files.readAllBytes(new File("./webapp" + request.getPath()).toPath()));
+    private HttpResponse getCssFile(HttpRequest request) throws IOException {
+
+        byte[] body = Files.readAllBytes(new File("./webapp" + request.getPath()).toPath());
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "text/css;charset=utf-8");
-        headers.put("Content-Length", String.valueOf(response.getBody().length));
-        response.setHeaders(headers);
-        response.setStatus(HttpStatus.OK);
+        headers.put("Content-Length", String.valueOf(body.length));
+
+        return HttpResponse.builder()
+                .status(HttpStatus.OK)
+                .headers(headers)
+                .body(body)
+                .build();
     }
 }

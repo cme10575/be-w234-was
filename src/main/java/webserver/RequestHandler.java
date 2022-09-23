@@ -11,6 +11,7 @@ import model.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.RequestParser;
+import util.ResponseUtil;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -31,22 +32,21 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
 
             HttpRequest request = RequestParser.parseRequest(br);
-            HttpResponse response = new HttpResponse(dos);
-            process(request, response);
-            response.send();
+            HttpResponse response = process(request);
+            ResponseUtil.send(dos, response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void process(HttpRequest request, HttpResponse response) throws IOException {
+    private HttpResponse process(HttpRequest request) throws IOException {
         try {
             Controller controller = handlerMapper.findHandler(request);
-            controller.map(request, response);
+            return controller.map(request);
         } catch (HttpException e) {
-            response.setErrorResponse(e.getErrorMessage().getStatus(), e.getErrorMessage().getMessage());
+            return ResponseUtil.setErrorResponse(e.getErrorMessage().getStatus(), e.getErrorMessage().getMessage());
         } catch (RuntimeException e) {
-            response.setErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+            return ResponseUtil.setErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 }

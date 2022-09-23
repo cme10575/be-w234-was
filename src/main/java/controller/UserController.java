@@ -1,10 +1,15 @@
 package controller;
 
 import Service.UserService;
+import exception.HttpErrorMessage;
+import exception.HttpException;
+import model.HttpMethod;
 import model.HttpRequest;
 import model.HttpResponse;
 import model.HttpStatus;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,18 +23,37 @@ public class UserController implements Controller {
     }
 
     @Override
-    public void map(HttpRequest request, HttpResponse response) {
+    public HttpResponse map(HttpRequest request) {
         if (request.getPath().equals("/user/create")) {
-            createUser(request, response);
+            if (request.getMethod().equals(HttpMethod.GET)) return  createUserByGet(request);
+            if (request.getMethod().equals(HttpMethod.POST)) return createUserByPost(request);
         }
+        throw new HttpException(HttpErrorMessage.INVALID_REQUEST);
     }
 
-    private void createUser(HttpRequest request, HttpResponse response) throws RuntimeException{
-        response.setBody(userService.addUser(request.getParams()).toString().getBytes());
+    private HttpResponse createUserByGet(HttpRequest request) throws RuntimeException {
+        byte[] body = userService.addUser(request.getParams()).toString().getBytes();
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "text/html;charset=utf-8");
-        headers.put("Content-Length", String.valueOf(response.getBody().length));
-        response.setHeaders(headers);
-        response.setStatus(HttpStatus.OK);
+        headers.put("Content-Length", String.valueOf(body.length));
+
+        return HttpResponse.builder()
+                .status(HttpStatus.OK)
+                .headers(headers)
+                .body(body)
+                .build();
+    }
+
+    private HttpResponse createUserByPost(HttpRequest request) throws RuntimeException {
+        byte[] body = userService.addUser(request.getBody()).toString().getBytes();
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "text/html;charset=utf-8");
+        headers.put("Content-Length", String.valueOf(body.length));
+
+        return HttpResponse.builder()
+                .status(HttpStatus.OK)
+                .headers(headers)
+                .body(body)
+                .build();
     }
 }
