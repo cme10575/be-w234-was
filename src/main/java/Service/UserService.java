@@ -2,7 +2,9 @@ package Service;
 
 import db.Database;
 import exception.UserErrorMessage;
+import exception.UserException;
 import model.User;
+import validator.UserValidator;
 
 import java.util.Map;
 
@@ -12,9 +14,9 @@ public class UserService { //todo: 싱글톤으로 변경
 
     public User addUser(Map<String, String> params) {
         if (Database.findUserById(params.get("userId")) != null) {
-            throw new RuntimeException(UserErrorMessage.DUPLICATE_USER.getMessage());
+            throw new UserException(UserErrorMessage.DUPLICATE_USER);
         }
-
+        UserValidator.validateUser(params);
         User user = new User(params.get("userId"), params.get("password"), params.get("name"), params.get("email"));
         Database.addUser(user);
         return user;

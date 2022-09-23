@@ -3,6 +3,7 @@ package controller;
 import Service.UserService;
 import exception.HttpErrorMessage;
 import exception.HttpException;
+import exception.UserException;
 import model.HttpMethod;
 import model.HttpRequest;
 import model.HttpResponse;
@@ -30,7 +31,7 @@ public class UserController implements Controller {
         throw new HttpException(HttpErrorMessage.INVALID_REQUEST);
     }
 
-    private HttpResponse createUserByGet(HttpRequest request) throws RuntimeException {
+    private HttpResponse createUserByGet(HttpRequest request) throws UserException {
         byte[] body = userService.addUser(request.getParams()).toString().getBytes();
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "text/html;charset=utf-8");
@@ -43,7 +44,7 @@ public class UserController implements Controller {
                 .build();
     }
 
-    private HttpResponse createUserByPost(HttpRequest request) throws RuntimeException {
+    private HttpResponse createUserByPost(HttpRequest request) throws UserException {
         byte[] body = userService.addUser(request.getBody()).toString().getBytes();
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "text/html;charset=utf-8");

@@ -5,6 +5,7 @@ import java.net.Socket;
 
 import controller.Controller;
 import exception.HttpException;
+import exception.UserException;
 import model.HttpRequest;
 import model.HttpResponse;
 import model.HttpStatus;
@@ -45,8 +46,10 @@ public class RequestHandler implements Runnable {
             return controller.map(request);
         } catch (HttpException e) {
             return ResponseUtil.setErrorResponse(e.getErrorMessage().getStatus(), e.getErrorMessage().getMessage());
-        } catch (RuntimeException e) {
+        } catch (UserException e) {
             return ResponseUtil.setErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseUtil.setErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 }
