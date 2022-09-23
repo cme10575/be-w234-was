@@ -1,3 +1,4 @@
+import db.Database;
 import exception.UserErrorMessage;
 import model.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +18,7 @@ public class UserServiceTest {
 
     @BeforeEach
     void initUsers() {
-        userService.getUsers().clear();
+        Database.clearAll();
     }
 
     private static Stream<Arguments> userParameters() {
@@ -40,7 +41,7 @@ public class UserServiceTest {
     @MethodSource("userParameters")
     void createUser(Map<String, String> userInfo) {
         User user = userService.addUser(userInfo);
-        assertThat(userService.getUsers().contains(user));
+        assertThat(Database.findAll().contains(user));
     }
 
     @DisplayName("중복된 유저 생성 안 되어야 함")
