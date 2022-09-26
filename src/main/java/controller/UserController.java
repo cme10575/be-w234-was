@@ -24,10 +24,10 @@ public class UserController implements Controller {
     @Override
     public HttpResponse map(HttpRequest request) {
         if (request.getPath().equals("/user/create")) {
-            if (request.getMethod().equals(HttpMethod.GET)) return  createUserByGet(request);
-            if (request.getMethod().equals(HttpMethod.POST)) return createUserByPost(request);
+            if (request.getMethod() == HttpMethod.GET) return  createUserByGet(request);
+            if (request.getMethod() == HttpMethod.POST) return createUserByPost(request);
         } else if (request.getPath().equals("/user/login"))
-            if (request.getMethod().equals(HttpMethod.POST)) return loginUserByPost(request);
+            if (request.getMethod() == HttpMethod.POST) return loginUserByPost(request);
         throw new HttpException(HttpErrorMessage.INVALID_REQUEST);
     }
 
