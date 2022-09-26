@@ -72,8 +72,8 @@ public class UserController implements Controller {
                     .headers(headers)
                     .body(body)
                     .build();
-        } catch (RuntimeException e) {
             byte[] body = e.getMessage().getBytes();
+        } catch (UserException e) {
             headers.put("Location", "/user/login_failed.html");
             headers.put("Content-Length", String.valueOf(body.length));
             headers.put("Set-Cookie", "logined=false;");

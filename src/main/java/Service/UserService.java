@@ -25,7 +25,7 @@ public class UserService { //todo: 싱글톤으로 변경
     public User login(Map<String, String> params) {
         User user = Database.findUserById(params.get("userId"));
         if (user == null || !user.getPassword().equals(params.get("password"))) {
-            throw new RuntimeException(UserErrorMessage.UNSIGNED_USER.getMessage());
+            throw new UserException(UserErrorMessage.UNSIGNED_USER);
         }
 
         return user;
