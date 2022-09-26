@@ -61,27 +61,23 @@ public class UserController implements Controller {
     private HttpResponse loginUserByPost(HttpRequest request) {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "text/html;charset=utf-8");
+        byte[] body;
 
         try {
-            byte[] body = userService.login(request.getBody()).toString().getBytes();
-            headers.put("Content-Length", String.valueOf(body.length));
+            body = userService.login(request.getBody()).toString().getBytes();
             headers.put("Set-Cookie", "logined=true; Path=/");
             headers.put("Location", "/index.html");
-            return HttpResponse.builder()
-                    .status(HttpStatus.MOVED_TEMPORARILY)
-                    .headers(headers)
-                    .body(body)
-                    .build();
-            byte[] body = e.getMessage().getBytes();
         } catch (UserException e) {
-            headers.put("Location", "/user/login_failed.html");
-            headers.put("Content-Length", String.valueOf(body.length));
+            body = e.getMessage().getBytes();
             headers.put("Set-Cookie", "logined=false;");
-            return HttpResponse.builder()
-                    .status(HttpStatus.MOVED_TEMPORARILY)
-                    .headers(headers)
-                    .body(body)
-                    .build();
+            headers.put("Location", "/user/login_failed.html");
         }
+
+        headers.put("Content-Length", String.valueOf(body.length));
+        return HttpResponse.builder()
+                .status(HttpStatus.MOVED_TEMPORARILY)
+                .headers(headers)
+                .body(body)
+                .build();
     }
 }
