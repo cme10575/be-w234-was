@@ -23,6 +23,12 @@ public class ResponseUtil {
                 .build();
     }
 
+    public static Map<String, String> makeDefaultHeader(byte[] body) {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Length", String.valueOf(body.length));
+        return headers;
+    }
+
     public static void send(DataOutputStream dos, HttpResponse response) throws IOException {
         dos.writeBytes("HTTP/1.1 " + response.getStatus().getCode() + " " + response.getStatus().getMessage() + " \r\n");
         for (var header : response.getHeaders().entrySet()) {

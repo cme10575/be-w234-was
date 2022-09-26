@@ -5,6 +5,7 @@ import exception.HttpException;
 import model.HttpRequest;
 import model.HttpResponse;
 import model.HttpStatus;
+import util.ResponseUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,10 +28,9 @@ public class FileController implements Controller {
     }
 
     private HttpResponse getTextFile(HttpRequest request) throws IOException {
-        byte[] body = Files.readAllBytes(new File("./webapp" + request.getPath()).toPath());
-        Map<String, String> headers = new HashMap<>();
+        byte[] body = getFile(request.getPath());
+        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body);
         headers.put("Content-Type", "text/html;charset=utf-8");
-        headers.put("Content-Length", String.valueOf(body.length));
 
         return HttpResponse.builder()
                 .status(HttpStatus.OK)
@@ -40,16 +40,18 @@ public class FileController implements Controller {
     }
 
     private HttpResponse getCssFile(HttpRequest request) throws IOException {
-
-        byte[] body = Files.readAllBytes(new File("./webapp" + request.getPath()).toPath());
-        Map<String, String> headers = new HashMap<>();
+        byte[] body = getFile(request.getPath());
+        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body);
         headers.put("Content-Type", "text/css;charset=utf-8");
-        headers.put("Content-Length", String.valueOf(body.length));
 
         return HttpResponse.builder()
                 .status(HttpStatus.OK)
                 .headers(headers)
                 .body(body)
                 .build();
+    }
+
+    private byte[] getFile(String path) throws IOException {
+        return Files.readAllBytes(new File("./webapp" + path).toPath());
     }
 }
