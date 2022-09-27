@@ -6,6 +6,8 @@ import exception.UserException;
 import model.User;
 import validator.UserValidator;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class UserService { //todo: 싱글톤으로 변경
@@ -29,5 +31,9 @@ public class UserService { //todo: 싱글톤으로 변경
         }
 
         return user;
+    }
+
+    public Collection<User> getUserList() {
+        return Database.findAll();
     }
 }
