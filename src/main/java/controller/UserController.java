@@ -58,25 +58,35 @@ public class UserController implements Controller {
     }
 
     private HttpResponse loginUserByPost(HttpRequest request) {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "text/html;charset=utf-8");
         byte[] body;
+        boolean isLoginSuccess = true;
 
         try {
             body = userService.login(request.getBody()).toString().getBytes();
-            headers.put("Set-Cookie", "logined=true; Path=/");
-            headers.put("Location", "/index.html");
         } catch (UserException e) {
             body = e.getMessage().getBytes();
-            headers.put("Set-Cookie", "logined=false;");
-            headers.put("Location", "/user/login_failed.html");
+            isLoginSuccess = false;
         }
 
-        headers.put("Content-Length", String.valueOf(body.length));
+        Map<String, String> headers = setLoginByPostHeader(body, isLoginSuccess);
         return HttpResponse.builder()
                 .status(HttpStatus.MOVED_TEMPORARILY)
                 .headers(headers)
                 .body(body)
                 .build();
+    }
+
+    private Map<String, String> setLoginByPostHeader(byte[] body, boolean isLoginSuccess) {
+        Map<String, String> headers = new HashMap<>();
+        if (isLoginSuccess) {
+            headers.put("Set-Cookie", "logined=true; Path=/");
+            headers.put("Location", "/index.html");
+        } else {
+            headers.put("Set-Cookie", "logined=false;");
+            headers.put("Location", "/user/login_failed.html");
+        }
+        headers.put("Content-Type", "text/html;charset=utf-8");
+        headers.put("Content-Length", String.valueOf(body.length));
+        return headers;
     }
 }
