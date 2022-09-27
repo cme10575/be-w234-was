@@ -2,6 +2,7 @@ package controller;
 
 import exception.HttpErrorMessage;
 import exception.HttpException;
+import model.ContentType;
 import model.HttpRequest;
 import model.HttpResponse;
 import model.HttpStatus;
@@ -29,8 +30,7 @@ public class FileController implements Controller {
 
     private HttpResponse getTextFile(HttpRequest request) throws IOException {
         byte[] body = getFile(request.getPath());
-        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body);
-        headers.put("Content-Type", "text/html;charset=utf-8");
+        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body, ContentType.HTML);
 
         return HttpResponse.builder()
                 .status(HttpStatus.OK)
@@ -41,8 +41,7 @@ public class FileController implements Controller {
 
     private HttpResponse getCssFile(HttpRequest request) throws IOException {
         byte[] body = getFile(request.getPath());
-        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body);
-        headers.put("Content-Type", "text/css;charset=utf-8");
+        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body, ContentType.CSS);
 
         return HttpResponse.builder()
                 .status(HttpStatus.OK)

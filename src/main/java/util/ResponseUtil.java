@@ -1,5 +1,6 @@
 package util;
 
+import model.ContentType;
 import model.HttpResponse;
 import model.HttpStatus;
 
@@ -12,9 +13,7 @@ public class ResponseUtil {
 
     public static HttpResponse setErrorResponse(HttpStatus status, String errorMessage) {
         byte[] body = errorMessage.getBytes();
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "text/html;charset=utf-8");
-        headers.put("Content-Length", String.valueOf(body.length));
+        Map<String, String> headers = makeDefaultHeader(body, ContentType.HTML);
 
         return HttpResponse.builder()
                 .status(status)
@@ -23,9 +22,10 @@ public class ResponseUtil {
                 .build();
     }
 
-    public static Map<String, String> makeDefaultHeader(byte[] body) {
+    public static Map<String, String> makeDefaultHeader(byte[] body, ContentType contentType) {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Length", String.valueOf(body.length));
+        headers.put("Content-Type", contentType.getHeaderValue());
         return headers;
     }
 

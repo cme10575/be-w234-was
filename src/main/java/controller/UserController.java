@@ -4,10 +4,7 @@ import Service.UserService;
 import exception.HttpErrorMessage;
 import exception.HttpException;
 import exception.UserException;
-import model.HttpMethod;
-import model.HttpRequest;
-import model.HttpResponse;
-import model.HttpStatus;
+import model.*;
 import util.ResponseUtil;
 
 import java.util.HashMap;
@@ -34,8 +31,7 @@ public class UserController implements Controller {
 
     private HttpResponse createUserByGet(HttpRequest request) throws UserException {
         byte[] body = userService.addUser(request.getParams()).toString().getBytes();
-        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body);
-        headers.put("Content-Type", "text/html;charset=utf-8");
+        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body, ContentType.HTML);
 
         return HttpResponse.builder()
                 .status(HttpStatus.OK)
@@ -46,8 +42,7 @@ public class UserController implements Controller {
 
     private HttpResponse createUserByPost(HttpRequest request) throws UserException {
         byte[] body = userService.addUser(request.getBody()).toString().getBytes();
-        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body);
-        headers.put("Content-Type", "text/html;charset=utf-8");
+        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body, ContentType.HTML);
         headers.put("Location", "/index.html");
 
         return HttpResponse.builder()
@@ -77,7 +72,8 @@ public class UserController implements Controller {
     }
 
     private Map<String, String> setLoginByPostHeader(byte[] body, boolean isLoginSuccess) {
-        Map<String, String> headers = new HashMap<>();
+        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body, ContentType.HTML);
+
         if (isLoginSuccess) {
             headers.put("Set-Cookie", "logined=true; Path=/");
             headers.put("Location", "/index.html");
@@ -85,8 +81,7 @@ public class UserController implements Controller {
             headers.put("Set-Cookie", "logined=false;");
             headers.put("Location", "/user/login_failed.html");
         }
-        headers.put("Content-Type", "text/html;charset=utf-8");
-        headers.put("Content-Length", String.valueOf(body.length));
+
         return headers;
     }
 }
