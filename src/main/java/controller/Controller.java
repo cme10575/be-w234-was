@@ -6,5 +6,5 @@ import model.HttpResponse;
 import java.io.IOException;
 
 public interface Controller {
-    public void map(HttpRequest request, HttpResponse response) throws IOException;
+    public HttpResponse map(HttpRequest request) throws IOException;
 }

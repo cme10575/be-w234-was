@@ -1,29 +1,33 @@
 package Service;
 
+import db.Database;
 import exception.UserErrorMessage;
+import exception.UserException;
 import model.User;
+import validator.UserValidator;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 public class UserService { //todo: 싱글톤으로 변경
-    private static ArrayList<User> users = new ArrayList<>();
 
     public UserService() {}
 
     public User addUser(Map<String, String> params) {
-        for (User user: users) {
-            if (user.getUserId().equals(params.get("userId"))) {
-                throw new RuntimeException(UserErrorMessage.DUPLICATE_USER.getMessage());
-            }
+        if (Database.findUserById(params.get("userId")) != null) {
+            throw new UserException(UserErrorMessage.DUPLICATE_USER);
         }
-
+        UserValidator.validateUser(params);
         User user = new User(params.get("userId"), params.get("password"), params.get("name"), params.get("email"));
-        users.add(user);
+        Database.addUser(user);
         return user;
     }
 
-    public ArrayList<User> getUsers() {
-        return users;
+    public User login(Map<String, String> params) {
+        User user = Database.findUserById(params.get("userId"));
+        if (user == null || !user.getPassword().equals(params.get("password"))) {
+            throw new UserException(UserErrorMessage.UNSIGNED_USER);
+        }
+
+        return user;
     }
 }

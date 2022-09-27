@@ -1,1 +1,28 @@
-GET localhost:8080/index.html HTTP/1.1
+### POST 회원가입
+POST localhost:8080/user/create HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+Content-Length: 59
+Content-Type: application/x-www-form-urlencoded
+Accept: */*
+
+userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net
+
+### POST 잘못된 형식 회원가입
+POST localhost:8080/user/create HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+Content-Length: 59
+Content-Type: application/x-www-form-urlencoded
+Accept: */*
+
+userId=jvajigi&password=passwaaord&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net
+
+### POST 로그인
+POST localhost:8080/user/login HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+Content-Type: application/x-www-form-urlencoded
+Accept: */*
+
+userId=javajigi&password=password

@@ -1,9 +1,11 @@
 package controller;
 
 import Service.UserService;
-import model.HttpRequest;
-import model.HttpResponse;
-import model.HttpStatus;
+import exception.HttpErrorMessage;
+import exception.HttpException;
+import exception.UserException;
+import model.*;
+import util.ResponseUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,18 +20,68 @@ public class UserController implements Controller {
     }
 
     @Override
-    public void map(HttpRequest request, HttpResponse response) {
+    public HttpResponse map(HttpRequest request) {
         if (request.getPath().equals("/user/create")) {
-            createUser(request, response);
-        }
+            if (request.getMethod() == HttpMethod.GET) return  createUserByGet(request);
+            if (request.getMethod() == HttpMethod.POST) return createUserByPost(request);
+        } else if (request.getPath().equals("/user/login"))
+            if (request.getMethod() == HttpMethod.POST) return loginUserByPost(request);
+        throw new HttpException(HttpErrorMessage.INVALID_REQUEST);
     }
 
-    private void createUser(HttpRequest request, HttpResponse response) throws RuntimeException{
-        response.setBody(userService.addUser(request.getParams()).toString().getBytes());
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "text/html;charset=utf-8");
-        headers.put("Content-Length", String.valueOf(response.getBody().length));
-        response.setHeaders(headers);
-        response.setStatus(HttpStatus.OK);
+    private HttpResponse createUserByGet(HttpRequest request) throws UserException {
+        byte[] body = userService.addUser(request.getParams()).toString().getBytes();
+        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body, ContentType.HTML);
+
+        return HttpResponse.builder()
+                .status(HttpStatus.OK)
+                .headers(headers)
+                .body(body)
+                .build();
+    }
+
+    private HttpResponse createUserByPost(HttpRequest request) throws UserException {
+        byte[] body = userService.addUser(request.getBody()).toString().getBytes();
+        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body, ContentType.HTML);
+        headers.put("Location", "/index.html");
+
+        return HttpResponse.builder()
+                .status(HttpStatus.MOVED_TEMPORARILY)
+                .headers(headers)
+                .body(body)
+                .build();
+    }
+
+    private HttpResponse loginUserByPost(HttpRequest request) {
+        byte[] body;
+        boolean isLoginSuccess = true;
+
+        try {
+            body = userService.login(request.getBody()).toString().getBytes();
+        } catch (UserException e) {
+            body = e.getMessage().getBytes();
+            isLoginSuccess = false;
+        }
+
+        Map<String, String> headers = setLoginByPostHeader(body, isLoginSuccess);
+        return HttpResponse.builder()
+                .status(HttpStatus.MOVED_TEMPORARILY)
+                .headers(headers)
+                .body(body)
+                .build();
+    }
+
+    private Map<String, String> setLoginByPostHeader(byte[] body, boolean isLoginSuccess) {
+        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body, ContentType.HTML);
+
+        if (isLoginSuccess) {
+            headers.put("Set-Cookie", "logined=true; Path=/");
+            headers.put("Location", "/index.html");
+        } else {
+            headers.put("Set-Cookie", "logined=false;");
+            headers.put("Location", "/user/login_failed.html");
+        }
+
+        return headers;
     }
 }

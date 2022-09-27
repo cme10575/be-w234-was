@@ -5,12 +5,14 @@ import java.net.Socket;
 
 import controller.Controller;
 import exception.HttpException;
+import exception.UserException;
 import model.HttpRequest;
 import model.HttpResponse;
 import model.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.RequestParser;
+import util.ResponseUtil;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -30,23 +32,24 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             DataOutputStream dos = new DataOutputStream(out);
 
-            HttpRequest request = RequestParser.parseRequestStartLine(br.readLine());
-            HttpResponse response = new HttpResponse(dos);
-            process(request, response);
-            response.send();
+            HttpRequest request = RequestParser.parseRequest(br);
+            HttpResponse response = process(request);
+            ResponseUtil.send(dos, response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void process(HttpRequest request, HttpResponse response) throws IOException {
+    private HttpResponse process(HttpRequest request) throws IOException {
         try {
             Controller controller = handlerMapper.findHandler(request);
-            controller.map(request, response);
+            return controller.map(request);
         } catch (HttpException e) {
-            response.setErrorResponse(e.getErrorMessage().getStatus(), e.getErrorMessage().getMessage());
+            return ResponseUtil.setErrorResponse(e.getErrorMessage().getStatus(), e.getErrorMessage().getMessage());
+        } catch (UserException e) {
+            return ResponseUtil.setErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (RuntimeException e) {
-            response.setErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+            return ResponseUtil.setErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 }
