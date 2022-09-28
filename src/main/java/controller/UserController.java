@@ -1,6 +1,7 @@
 package controller;
 
-import Service.UserService;
+import service.UserService;
+import entity.User;
 import exception.HttpErrorMessage;
 import exception.HttpException;
 import exception.UserErrorMessage;

@@ -1,6 +1,6 @@
 package view;
 
-import model.User;
+import entity.User;
 
 import java.io.IOException;
 import java.nio.file.Files;

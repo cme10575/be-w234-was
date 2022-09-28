@@ -1,13 +1,13 @@
-import db.Database;
+import repository.Database;
 import exception.UserErrorMessage;
 import exception.UserException;
-import model.User;
+import entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import Service.UserService;
+import service.UserService;
 
 import java.util.Map;
 import java.util.stream.Stream;

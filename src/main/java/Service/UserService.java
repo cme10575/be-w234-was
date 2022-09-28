@@ -1,9 +1,9 @@
-package Service;
+package service;
 
-import db.Database;
+import repository.Database;
 import exception.UserErrorMessage;
 import exception.UserException;
-import model.User;
+import entity.User;
 import validator.UserValidator;
 
 import java.util.Collection;
