@@ -7,6 +7,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import repository.UserH2Repository;
+import repository.UserRepository;
 import service.UserService;
 
 import java.util.Map;
@@ -16,10 +18,11 @@ import static org.assertj.core.api.Assertions.*;
 
 public class UserServiceTest {
     UserService userService = new UserService();
+    UserRepository userRepository = new UserH2Repository();
 
     @BeforeEach
     void initUsers() {
-        Database.clearAll();
+        userRepository.clearAll();
     }
 
     private static Stream<Arguments> userParameters() {
@@ -42,7 +45,7 @@ public class UserServiceTest {
     @MethodSource("userParameters")
     void createUser(Map<String, String> userInfo) {
         User user = userService.addUser(userInfo);
-        assertThat(Database.findAll().contains(user));
+        assertThat(userRepository.findAll().contains(user));
     }
 
     @DisplayName("중복된 유저 생성 안 되어야 함")
