@@ -66,7 +66,16 @@ public class RequestParser {
             heaerDatas.put(token[0].trim(), token[1].trim());
             line = br.readLine();
         }
+
+        Map<String, String> cookies = new HashMap<>();
+        String[] token = heaerDatas.get("Cookie").split(";");
+        for(var t : token) {
+            String[] cookie = t.split("=", 2);
+            cookies.put(cookie[0].trim(), cookie[1].trim());
+        }
+        logger.debug("cookies: {}", cookies);
         request.setHeaders(heaerDatas);
+        request.setCookies(cookies);
     }
 
     static void parseBodys(HttpRequest request, BufferedReader br) throws UnsupportedEncodingException,IOException {
