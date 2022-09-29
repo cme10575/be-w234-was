@@ -6,10 +6,7 @@ import exception.UserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -66,11 +63,11 @@ public class UserH2Repository implements UserRepository {
         EntityTransaction tx = em.getTransaction();
         tx.begin();
         try {
-            Collection<User> users = em.createQuery("SELECT t FROM User t", User.class).getResultList();
-            users.clear();
+            Query query = em.createQuery("DELETE FROM User");
+            query.executeUpdate();
             tx.commit();
         } catch (Exception e) {
-            logger.debug(e.getMessage());
+            logger.debug("user clear failed: " + e.getMessage());
             tx.rollback();
         } finally {
             em.close();
