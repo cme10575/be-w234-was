@@ -7,11 +7,8 @@ import exception.HttpException;
 import exception.UserErrorMessage;
 import exception.UserException;
 import model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import util.ResponseUtil;
 import view.UserViewResolver;
-import webserver.RequestHandler;
 
 import java.io.IOException;
 import java.util.Collection;

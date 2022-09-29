@@ -29,7 +29,6 @@ public class MemoViewResolver {
             "              </li>";
 
     public String getMemoListHtml(Collection<Memo> memoList) throws IOException {
-        System.out.println("!!!!!!!!!!!!!!!");
         String html = Files.readString(Path.of("./webapp/index.html"));
         StringBuilder stringBuilder = new StringBuilder(html);
         return stringBuilder.insert(stringBuilder.lastIndexOf("<ul class=\"list\">"), getMemoRecords(memoList)).toString();
