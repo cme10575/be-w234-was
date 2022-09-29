@@ -17,7 +17,7 @@ public class UserService { //todo: 싱글톤으로 변경
     public UserService() {}
 
     public User addUser(Map<String, String> params) {
-        if (!userRepository.findUserById(params.get("userId")).isEmpty()) {
+        if (!userRepository.findUserByUserId(params.get("userId")).isEmpty()) {
             throw new UserException(UserErrorMessage.DUPLICATE_USER);
         }
         UserValidator.validateUser(params);
@@ -26,8 +26,12 @@ public class UserService { //todo: 싱글톤으로 변경
         return user;
     }
 
+    public User getUser(String id) {
+        return userRepository.findUserById(id).get();
+    }
+
     public User login(Map<String, String> params) {
-        Optional<User> user = userRepository.findUserById(params.get("userId"));
+        Optional<User> user = userRepository.findUserByUserId(params.get("userId"));
         if (user == null || !user.get().getPassword().equals(params.get("password"))) {
             throw new UserException(UserErrorMessage.UNSIGNED_USER);
         }

@@ -1,11 +1,10 @@
 package repository;
 
-import com.google.common.collect.Maps;
-
 import entity.User;
+import exception.UserErrorMessage;
+import exception.UserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.RequestHandler;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -13,7 +12,6 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public class UserH2Repository implements UserRepository {
@@ -37,12 +35,21 @@ public class UserH2Repository implements UserRepository {
     }
 
     @Override
-    public Optional<User> findUserById(String userId) {
+    public Optional<User> findUserByUserId(String userId) {
         EntityManager em = emf.createEntityManager();
         List<User> user = em.createQuery("SELECT t FROM User t where t.userId = :value1", User.class)
                 .setParameter("value1", userId).getResultList();
         em.close();
         return user.stream().findAny();
+    }
+
+    @Override
+    public Optional<User> findUserById(String id) {
+        EntityManager em = emf.createEntityManager();
+        User user = em.find(User.class, Long.parseLong(id));
+        if (user == null)
+            throw new UserException(UserErrorMessage.UNSIGNED_USER);
+        return Optional.of(user);
     }
 
     @Override

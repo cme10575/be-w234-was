@@ -78,30 +78,31 @@ public class UserController implements Controller {
     }
 
     private HttpResponse loginUserByPost(HttpRequest request) {
-        byte[] body;
+        String bodyValue;
         boolean isLoginSuccess = true;
 
         try {
-            body = userService.login(request.getBody()).toString().getBytes();
+            bodyValue = userService.login(request.getBody()).getUserId();
         } catch (UserException e) {
-            body = e.getMessage().getBytes();
+            bodyValue = e.getMessage();
             isLoginSuccess = false;
         }
 
-        Map<String, String> headers = setLoginByPostHeader(body, isLoginSuccess);
+        Map<String, String> headers = setLoginByPostHeader(bodyValue, isLoginSuccess);
         return HttpResponse.builder()
                 .status(HttpStatus.MOVED_TEMPORARILY)
                 .headers(headers)
-                .body(body)
+                .body(bodyValue.getBytes())
                 .build();
     }
 
-    private Map<String, String> setLoginByPostHeader(byte[] body, boolean isLoginSuccess) {
-        Map<String, String> headers = ResponseUtil.makeDefaultHeader(body, ContentType.HTML);
+    private Map<String, String> setLoginByPostHeader(String bodyValue, boolean isLoginSuccess) {
+        Map<String, String> headers = ResponseUtil.makeDefaultHeader(bodyValue.getBytes(), ContentType.HTML);
 
         if (isLoginSuccess) {
-            headers.put("Set-Cookie", "logined=true; Path=/");
+            headers.put("Set-Cookie", "logined=true; "+"Id=" + bodyValue+"; Path=/;");
             headers.put("Location", "/index.html");
+
         } else {
             headers.put("Set-Cookie", "logined=false;");
             headers.put("Location", "/user/login_failed.html");

@@ -66,6 +66,8 @@ public class RequestParser {
             heaerDatas.put(token[0].trim(), token[1].trim());
             line = br.readLine();
         }
+        request.setHeaders(heaerDatas);
+        if (heaerDatas.get("Cookie") == null) return;
 
         Map<String, String> cookies = new HashMap<>();
         String[] token = heaerDatas.get("Cookie").split(";");
@@ -74,7 +76,7 @@ public class RequestParser {
             cookies.put(cookie[0].trim(), cookie[1].trim());
         }
         logger.debug("cookies: {}", cookies);
-        request.setHeaders(heaerDatas);
+
         request.setCookies(cookies);
     }
 

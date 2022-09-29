@@ -7,6 +7,7 @@ import exception.HttpException;
 import exception.UserErrorMessage;
 import model.*;
 import service.MemoService;
+import service.UserService;
 import util.ResponseUtil;
 import view.MemoViewResolver;
 
@@ -16,6 +17,7 @@ import java.util.Map;
 
 public class MemoController implements Controller{
     MemoService memoService = new MemoService();
+    UserService userService = new UserService();
     MemoViewResolver viewResolver = new MemoViewResolver();
 
     @Override
@@ -42,7 +44,14 @@ public class MemoController implements Controller{
     }
 
     private HttpResponse createMemoByPost(HttpRequest request) {
-        memoService.addMemo(request.getBody().get("content"));
+        if (request.getCookies() == null || request.getCookies().get("logined") == null || request.getCookies().get("logined").equals("false"))
+            return ResponseUtil.setErrorResponse(HttpStatus.BAD_REQUEST, UserErrorMessage.UNAUTHROIZED_USER.getMessage());
+
+        User user = userService.getUser(request.getCookies().get("Id"));
+        if (user == null)
+            return ResponseUtil.setErrorResponse(HttpStatus.BAD_REQUEST, UserErrorMessage.UNAUTHROIZED_USER.getMessage());
+
+        memoService.addMemo(request.getBody().get("content"), user.getName());
         byte[] body = "".getBytes();
         Map<String, String> headers = ResponseUtil.makeDefaultHeader(body, ContentType.HTML);
         headers.put("Location", "/index.html");

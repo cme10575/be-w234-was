@@ -1,5 +1,6 @@
 package entity;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
@@ -8,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
+@Getter
 @Table(name = "Users")
 @NoArgsConstructor
 public class User {
@@ -24,22 +26,6 @@ public class User {
         this.password = password;
         this.name = name;
         this.email = email;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     @Override
