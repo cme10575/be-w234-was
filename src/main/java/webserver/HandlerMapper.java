@@ -20,11 +20,19 @@ public class HandlerMapper {
     }
 
     public Controller findHandler(HttpRequest request) {
-        if (request.getPath().matches("(.*).css")) {
+        if (request.getPath().matches("/index.html")) {
+            return memoController;
+        } else if (request.getPath().matches("(.*).css")) {
             return fileController;
         } else if (request.getPath().matches("(.*).html")) {
             return fileController;
         } else if (request.getPath().matches("(.*).js")) {
+            return fileController;
+        } else if (request.getPath().matches("(.*).png")) {
+            return fileController;
+        } else if (request.getPath().matches("(.*).ico")) {
+            return fileController;
+        } else if (request.getPath().matches("(.*).ttf")) {
             return fileController;
         } else if (request.getPath().matches("/user(.*)")) {
             return userController;
