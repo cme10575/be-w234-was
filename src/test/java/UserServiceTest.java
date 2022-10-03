@@ -33,9 +33,7 @@ public class UserServiceTest {
 
     @BeforeEach
     void initUsers() {
-        //System.out.println("init User");
         userRepository.clearAll();
-        System.out.println("init User: " + userRepository.findAll());
     }
 
     private static Stream<Arguments> userParameters() {
@@ -48,7 +46,6 @@ public class UserServiceTest {
     @Test
     @DisplayName("유저 생성 테스트")
     void createUser() {
-        System.out.println("find All: " + userRepository.findAll());
         User user = userService.addUser(userInfo1);
         assertThat(userRepository.findAll().contains(user));
     }
