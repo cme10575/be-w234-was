@@ -39,7 +39,7 @@ public class UserController implements Controller {
 
     private HttpResponse getUserListFile(HttpRequest request) throws UserException, IOException {
         byte[] body;
-        if (request.getHeaders().get("Cookie").contains("logined=true")) {
+        if (request.getCookies().get("logined").equals("true")) {
             Collection<User> userList = userService.getUserList();
             body = userViewResolver.getUserListHtml(userList).getBytes();
         } else {

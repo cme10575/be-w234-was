@@ -19,7 +19,7 @@ public class UserViewResolver {
     }
 
     private String getUserRecords(Collection<User> userList) {
-        AtomicInteger index = new AtomicInteger(1);
+        AtomicInteger index = new AtomicInteger(3);
         return userList.stream()
                 .map(user -> String.format(
                         userRecordFormat,
