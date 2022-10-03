@@ -8,7 +8,7 @@ import exception.HttpErrorMessage;
 import exception.HttpException;
 import model.HttpRequest;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -23,7 +23,7 @@ public class HandlerMapper {
         userController = new UserController();
         fileController = new FileController();
         memoController = new MemoController();
-        controllerMap = new HashMap<>();
+        controllerMap = new LinkedHashMap<>();
         controllerMap.put(Pattern.compile("/index.html"), memoController);
         controllerMap.put(Pattern.compile("(.*).css"), fileController);
         controllerMap.put(Pattern.compile("(.*).html"), fileController);
