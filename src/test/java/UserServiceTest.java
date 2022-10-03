@@ -1,4 +1,4 @@
-import exception.UserErrorMessage;
+import exception.UserExceptionMessage;
 import exception.UserException;
 import entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +60,6 @@ public class UserServiceTest {
         userService.addUser(userInfo);
         assertThatThrownBy(() -> {
             userService.addUser(userInfo);
-        }).isInstanceOf(UserException.class).hasMessageContaining(UserErrorMessage.DUPLICATE_USER.getMessage());
+        }).isInstanceOf(UserException.class).hasMessageContaining(UserExceptionMessage.DUPLICATE_USER.getMessage());
     }
 }

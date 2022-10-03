@@ -1,4 +1,3 @@
-import exception.HttpErrorMessage;
 import exception.HttpException;
 import model.HttpMethod;
 import model.HttpRequest;

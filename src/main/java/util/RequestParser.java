@@ -1,7 +1,7 @@
 package util;
 
 import com.google.common.base.Strings;
-import exception.HttpErrorMessage;
+import exception.HttpExceptionMessage;
 import exception.HttpException;
 import model.HttpMethod;
 import model.HttpRequest;
@@ -30,13 +30,13 @@ public class RequestParser {
     static void parseFirstLine(HttpRequest request, BufferedReader br) throws IOException {
         String firstLine = br.readLine();
         if (firstLine == null || firstLine.equals("")) {
-            throw new HttpException(HttpErrorMessage.EMPTY_REQUEST);
+            throw new HttpException(HttpExceptionMessage.EMPTY_REQUEST);
         }
 
         String[] token = firstLine.split(" ");
 
         if (token.length != 3) {
-            throw new HttpException(HttpErrorMessage.INVALID_REQUEST);
+            throw new HttpException(HttpExceptionMessage.INVALID_REQUEST);
         }
         request.setMethod(HttpMethod.valueOf(token[0]));
 

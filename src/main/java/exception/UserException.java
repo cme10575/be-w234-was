@@ -1,13 +1,13 @@
 package exception;
 
 public class UserException extends RuntimeException {
-    UserErrorMessage errorMessage;
+    UserExceptionMessage errorMessage;
 
-    public UserException(UserErrorMessage message) {
+    public UserException(UserExceptionMessage message) {
         super(message.getMessage());
     }
 
-    public UserErrorMessage getErrorMessage() {
+    public UserExceptionMessage getErrorMessage() {
         return errorMessage;
     }
 }

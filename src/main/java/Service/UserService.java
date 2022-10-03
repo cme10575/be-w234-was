@@ -1,6 +1,6 @@
 package service;
 
-import exception.UserErrorMessage;
+import exception.UserExceptionMessage;
 import exception.UserException;
 import entity.User;
 import repository.UserH2Repository;
@@ -18,7 +18,7 @@ public class UserService { //todo: 싱글톤으로 변경
 
     public User addUser(Map<String, String> params) {
         if (!userRepository.findUserByUserId(params.get("userId")).isEmpty()) {
-            throw new UserException(UserErrorMessage.DUPLICATE_USER);
+            throw new UserException(UserExceptionMessage.DUPLICATE_USER);
         }
         UserValidator.validateUser(params);
         User user = new User(params.get("userId"), params.get("password"), params.get("name"), params.get("email"));
@@ -27,13 +27,13 @@ public class UserService { //todo: 싱글톤으로 변경
     }
 
     public User getUser(String id) {
-        return userRepository.findUserById(id).orElseThrow(() -> new UserException(UserErrorMessage.UNSIGNED_USER));
+        return userRepository.findUserById(id).orElseThrow(() -> new UserException(UserExceptionMessage.UNSIGNED_USER));
     }
 
     public User login(Map<String, String> params) {
         Optional<User> user = userRepository.findUserByUserId(params.get("userId"));
         if (userRepository.findUserByUserId(params.get("userId")).isEmpty() || !user.get().getPassword().equals(params.get("password"))) {
-            throw new UserException(UserErrorMessage.UNSIGNED_USER);
+            throw new UserException(UserExceptionMessage.UNSIGNED_USER);
         }
 
         return user.get();

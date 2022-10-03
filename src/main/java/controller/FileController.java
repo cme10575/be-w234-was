@@ -1,6 +1,5 @@
 package controller;
 
-import exception.HttpErrorMessage;
 import exception.HttpException;
 import model.ContentType;
 import model.HttpRequest;

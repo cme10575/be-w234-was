@@ -4,7 +4,7 @@ import controller.Controller;
 import controller.FileController;
 import controller.MemoController;
 import controller.UserController;
-import exception.HttpErrorMessage;
+import exception.HttpExceptionMessage;
 import exception.HttpException;
 import model.HttpRequest;
 
@@ -37,6 +37,6 @@ public class HandlerMapper {
             if (entry.getKey().matcher(request.getPath()).matches())
                 return entry.getValue();
         }
-        throw new HttpException(HttpErrorMessage.INVALID_REQUEST);
+        throw new HttpException(HttpExceptionMessage.INVALID_REQUEST);
     }
 }

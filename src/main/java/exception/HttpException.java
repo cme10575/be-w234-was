@@ -1,14 +1,14 @@
 package exception;
 
 public class HttpException extends RuntimeException {
-    HttpErrorMessage errorMessage;
+    HttpExceptionMessage errorMessage;
 
-    public HttpException(HttpErrorMessage message) {
+    public HttpException(HttpExceptionMessage message) {
         super(message.getMessage());
         errorMessage  = message;
     }
 
-    public HttpErrorMessage getErrorMessage() {
+    public HttpExceptionMessage getErrorMessage() {
         return errorMessage;
     }
 }

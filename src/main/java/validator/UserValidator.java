@@ -1,6 +1,6 @@
 package validator;
 
-import exception.UserErrorMessage;
+import exception.UserExceptionMessage;
 import exception.UserException;
 
 import java.util.Map;
@@ -30,13 +30,13 @@ public class UserValidator {
 
     public static boolean validateUser(Map<String, String> params) {
         if (params.get("userId") == null || !isValidId(params.get("userId")))
-            throw new UserException(UserErrorMessage.INVALID_ID_TYPE);
+            throw new UserException(UserExceptionMessage.INVALID_ID_TYPE);
         if (params.get("password") == null || !isValidPassword(params.get("password")))
-            throw new UserException(UserErrorMessage.INVALID_PASSWORD_TYPE);
+            throw new UserException(UserExceptionMessage.INVALID_PASSWORD_TYPE);
         if (params.get("name") == null || !isValidName(params.get("name")))
-            throw new UserException(UserErrorMessage.INVALID_NAME_TYPE);
+            throw new UserException(UserExceptionMessage.INVALID_NAME_TYPE);
         if (params.get("email") == null || !isValidEmail(params.get("email")))
-            throw new UserException(UserErrorMessage.INVALID_EMAIL_TYPE);
+            throw new UserException(UserExceptionMessage.INVALID_EMAIL_TYPE);
         return true;
     }
 

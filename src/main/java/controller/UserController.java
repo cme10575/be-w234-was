@@ -2,9 +2,9 @@ package controller;
 
 import service.UserService;
 import entity.User;
-import exception.HttpErrorMessage;
+import exception.HttpExceptionMessage;
 import exception.HttpException;
-import exception.UserErrorMessage;
+import exception.UserExceptionMessage;
 import exception.UserException;
 import model.*;
 import util.ResponseUtil;
@@ -34,7 +34,7 @@ public class UserController implements Controller {
         } else if (request.getPath().equals("/user/list")) {
             if (request.getMethod() == HttpMethod.GET) return getUserListFile(request);
         }
-        throw new HttpException(HttpErrorMessage.INVALID_REQUEST);
+        throw new HttpException(HttpExceptionMessage.INVALID_REQUEST);
     }
 
     private HttpResponse getUserListFile(HttpRequest request) throws UserException, IOException {
@@ -43,7 +43,7 @@ public class UserController implements Controller {
             Collection<User> userList = userService.getUserList();
             body = userViewResolver.getUserListHtml(userList).getBytes();
         } else {
-            body = UserErrorMessage.UNAUTHROIZED_USER.getMessage().getBytes();
+            body = UserExceptionMessage.UNAUTHROIZED_USER.getMessage().getBytes();
         }
 
         Map<String, String> headers = ResponseUtil.makeDefaultHeader(body, ContentType.HTML);

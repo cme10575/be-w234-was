@@ -2,9 +2,9 @@ package controller;
 
 import entity.Memo;
 import entity.User;
-import exception.HttpErrorMessage;
+import exception.HttpExceptionMessage;
 import exception.HttpException;
-import exception.UserErrorMessage;
+import exception.UserExceptionMessage;
 import exception.UserException;
 import model.*;
 import service.MemoService;
@@ -28,7 +28,7 @@ public class MemoController implements Controller{
         } else if (request.getPath().equals("/index.html")) {
             if (request.getMethod() == HttpMethod.GET) return getMemoListByGet();
         }
-        throw new HttpException(HttpErrorMessage.INVALID_REQUEST);
+        throw new HttpException(HttpExceptionMessage.INVALID_REQUEST);
     }
 
     private HttpResponse getMemoListByGet() throws IOException {
@@ -46,7 +46,7 @@ public class MemoController implements Controller{
 
     private HttpResponse createMemoByPost(HttpRequest request) {
         if (request.getCookies() == null || request.getCookies().get("logined") == null || request.getCookies().get("logined").equals("false"))
-            return ResponseUtil.setErrorResponse(HttpStatus.BAD_REQUEST, UserErrorMessage.UNAUTHROIZED_USER.getMessage());
+            return ResponseUtil.setErrorResponse(HttpStatus.BAD_REQUEST, UserExceptionMessage.UNAUTHROIZED_USER.getMessage());
 
         User user;
         try {

@@ -1,6 +1,6 @@
 package exception;
 
-public enum UserErrorMessage {
+public enum UserExceptionMessage {
     DUPLICATE_USER("이미 가입된 회원입니다."),
     UNSIGNED_USER("회원 정보가 없습니다."),
     INVALID_ID_TYPE("유효하지 않은 ID입니다."),
@@ -11,7 +11,7 @@ public enum UserErrorMessage {
 
     private String message;
 
-    UserErrorMessage(String errorMessage) {
+    UserExceptionMessage(String errorMessage) {
         this.message = errorMessage;
     }
 
