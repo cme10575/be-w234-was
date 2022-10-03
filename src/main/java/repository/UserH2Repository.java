@@ -1,8 +1,6 @@
 package repository;
 
 import entity.User;
-import exception.UserErrorMessage;
-import exception.UserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +42,7 @@ public class UserH2Repository implements UserRepository {
     public Optional<User> findUserById(String id) {
         EntityManager em = emf.createEntityManager();
         User user = em.find(User.class, Long.parseLong(id));
-        if (user == null)
-            throw new UserException(UserErrorMessage.UNSIGNED_USER);
-        return Optional.of(user);
+        return Optional.ofNullable(user);
     }
 
     @Override

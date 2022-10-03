@@ -5,6 +5,7 @@ import entity.User;
 import exception.HttpErrorMessage;
 import exception.HttpException;
 import exception.UserErrorMessage;
+import exception.UserException;
 import model.*;
 import service.MemoService;
 import service.UserService;
@@ -47,9 +48,12 @@ public class MemoController implements Controller{
         if (request.getCookies() == null || request.getCookies().get("logined") == null || request.getCookies().get("logined").equals("false"))
             return ResponseUtil.setErrorResponse(HttpStatus.BAD_REQUEST, UserErrorMessage.UNAUTHROIZED_USER.getMessage());
 
-        User user = userService.getUser(request.getCookies().get("Id"));
-        if (user == null)
-            return ResponseUtil.setErrorResponse(HttpStatus.BAD_REQUEST, UserErrorMessage.UNAUTHROIZED_USER.getMessage());
+        User user;
+        try {
+            user = userService.getUser(request.getCookies().get("Id"));
+        } catch (UserException e) {
+            return ResponseUtil.setErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
 
         memoService.addMemo(request.getBody().get("content"), user.getName());
         byte[] body = "".getBytes();

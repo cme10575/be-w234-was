@@ -27,12 +27,12 @@ public class UserService { //todo: 싱글톤으로 변경
     }
 
     public User getUser(String id) {
-        return userRepository.findUserById(id).get();
+        return userRepository.findUserById(id).orElseThrow(() -> new UserException(UserErrorMessage.UNSIGNED_USER));
     }
 
     public User login(Map<String, String> params) {
         Optional<User> user = userRepository.findUserByUserId(params.get("userId"));
-        if (user == null || !user.get().getPassword().equals(params.get("password"))) {
+        if (userRepository.findUserByUserId(params.get("userId")).isEmpty() || !user.get().getPassword().equals(params.get("password"))) {
             throw new UserException(UserErrorMessage.UNSIGNED_USER);
         }
 
