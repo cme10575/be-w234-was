@@ -42,7 +42,7 @@ public class RequestTest {
         InputStream is = new ByteArrayInputStream(getIndexRequest.getBytes());
         BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
         HttpRequest request = RequestParser.parseRequest(br);
-        assertThat(request.getBody()).isNull();
+        assertThat(request.getBody()).isEmpty();
         assertThat(request.getCookies()).isNull();
         assertThat(request.getMethod()).isSameAs(HttpMethod.GET);
         assertThat(request.getPath()).isEqualTo("/index.html");
