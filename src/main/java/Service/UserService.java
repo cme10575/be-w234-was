@@ -11,10 +11,18 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
-public class UserService { //todo: 싱글톤으로 변경
-    private static UserRepository userRepository = new UserH2Repository();
+public class UserService {
+    private static UserRepository userRepository = UserH2Repository.getInstance();
 
-    public UserService() {}
+    private UserService() {}
+
+    private static class UserServiceHolder {
+        public static final UserService INSTANCE = new UserService();
+    }
+
+    public static UserService getInstance() {
+        return UserService.UserServiceHolder.INSTANCE;
+    }
 
     public User addUser(Map<String, String> params) {
         if (!userRepository.findUserByUserId(params.get("userId")).isEmpty()) {
