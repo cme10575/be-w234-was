@@ -14,6 +14,17 @@ public class MemoH2Repository implements MemoRepository {
     private static final Logger logger = LoggerFactory.getLogger(MemoH2Repository.class);
     static EntityManagerFactory emf = Persistence.createEntityManagerFactory("was");
 
+    private MemoH2Repository() {}
+
+    private static class MemoH2RepositoryHolder {
+        public static final MemoH2Repository INSTANCE = new MemoH2Repository();
+    }
+
+    public static MemoH2Repository getInstance() {
+        return MemoH2Repository.MemoH2RepositoryHolder.INSTANCE;
+    }
+
+
     @Override
     public void save(Memo memo) {
         EntityManager em = emf.createEntityManager();

@@ -17,8 +17,8 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.*;
 
 public class UserServiceTest {
-    UserService userService = new UserService();
-    UserRepository userRepository = new UserH2Repository();
+    UserService userService = UserService.getInstance();
+    UserRepository userRepository = UserH2Repository.getInstance();
     static Map<String, String> userInfo1 = Map.ofEntries(
             Map.entry("userId", "javajigi"),
             Map.entry("password", "password!1234"),

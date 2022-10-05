@@ -13,6 +13,17 @@ public class UserH2Repository implements UserRepository {
     private static final Logger logger = LoggerFactory.getLogger(UserH2Repository.class);
     static EntityManagerFactory emf = Persistence.createEntityManagerFactory("was");
 
+    private UserH2Repository() {}
+
+    private static class UserH2RepositoryHolder {
+        public static final UserH2Repository INSTANCE = new UserH2Repository();
+    }
+
+    public static UserH2Repository getInstance() {
+        return UserH2Repository.UserH2RepositoryHolder.INSTANCE;
+    }
+
+
     @Override
     public void addUser(User user) {
         EntityManager em = emf.createEntityManager();

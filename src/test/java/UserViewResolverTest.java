@@ -9,7 +9,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserViewResolverTest {
-    private UserViewResolver userViewResolver = new UserViewResolver();
+    private UserViewResolver userViewResolver = UserViewResolver.getInstance();
 
     @Test
     @DisplayName("메모 리스트가 html파일에 동적으로 매핑 되는지 확인")

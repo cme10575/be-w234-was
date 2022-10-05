@@ -1,6 +1,5 @@
 package controller;
 
-import exception.HttpException;
 import model.ContentType;
 import model.HttpRequest;
 import model.HttpResponse;
@@ -10,10 +9,20 @@ import util.ResponseUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
 import java.util.Map;
 
 public class FileController implements Controller {
+
+    private FileController() {}
+
+    private static class FileControllerHolder {
+        public static final FileController INSTANCE = new FileController();
+    }
+
+    public static FileController getInstance() {
+        return FileControllerHolder.INSTANCE;
+    }
+
     @Override
     public HttpResponse map(HttpRequest request) throws IOException {
         if (request.getPath().matches("(.*).css")) {

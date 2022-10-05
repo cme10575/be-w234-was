@@ -17,9 +17,20 @@ import java.util.Collection;
 import java.util.Map;
 
 public class MemoController implements Controller{
-    MemoService memoService = new MemoService();
-    UserService userService = new UserService();
-    MemoViewResolver viewResolver = new MemoViewResolver();
+    MemoService memoService = MemoService.getInstance();
+    UserService userService = UserService.getInstance();
+    MemoViewResolver viewResolver = MemoViewResolver.getInstance();
+
+    private MemoController() {}
+
+    private static class MemoControllerHolder {
+        public static final MemoController INSTANCE = new MemoController();
+    }
+
+    public static MemoController getInstance() {
+        return MemoController.MemoControllerHolder.INSTANCE;
+    }
+
 
     @Override
     public HttpResponse map(HttpRequest request) throws IOException {

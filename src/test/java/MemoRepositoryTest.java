@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.*;
 
 public class MemoRepositoryTest {
 
-    private MemoRepository memoRepository = new MemoH2Repository();
+    private MemoRepository memoRepository = MemoH2Repository.getInstance();
 
     @Test
     @DisplayName("메모 저장 테스트")

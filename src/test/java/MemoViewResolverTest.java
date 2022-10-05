@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.*;
 
 public class MemoViewResolverTest {
 
-    private MemoViewResolver memoViewResolver = new MemoViewResolver();
+    private MemoViewResolver memoViewResolver = MemoViewResolver.getInstance();
 
     @Test
     @DisplayName("메모 리스트가 html파일에 동적으로 매핑 되는지 확인")

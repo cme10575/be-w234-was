@@ -18,11 +18,19 @@ import java.util.Map;
  * /user/* 관련 요청 처리
  */
 public class UserController implements Controller {
-    private static UserService userService = new UserService();
-    private static UserViewResolver userViewResolver = new UserViewResolver();
+    private static UserService userService = UserService.getInstance();
+    private static UserViewResolver userViewResolver = UserViewResolver.getInstance();
 
-    public UserController() {
+    private UserController() {}
+
+    private static class UserControllerHolder {
+        public static final UserController INSTANCE = new UserController();
     }
+
+    public static UserController getInstance() {
+        return UserController.UserControllerHolder.INSTANCE;
+    }
+
 
     @Override
     public HttpResponse map(HttpRequest request) throws IOException {

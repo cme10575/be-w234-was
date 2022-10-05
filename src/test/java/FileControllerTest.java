@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FileControllerTest {
 
-    private FileController fileController = new FileController();
+    private FileController fileController = FileController.getInstance();
 
     @Test
     @DisplayName("알맞은 파일을 가져옴")

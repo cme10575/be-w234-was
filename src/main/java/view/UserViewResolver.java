@@ -10,6 +10,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class UserViewResolver {
+    private UserViewResolver() {}
+
+    private static class UserViewResolverHolder {
+        public static final UserViewResolver INSTANCE = new UserViewResolver();
+    }
+
+    public static UserViewResolver getInstance() {
+        return UserViewResolver.UserViewResolverHolder.INSTANCE;
+    }
+    
     String userRecordFormat = "<tr><th scope=\"row\">%d</th> <td>%s</td> <td>%s</td> <td>%s</td><td><a href=\"#\" class=\"btn btn-success\" role=\"button\">수정</a></td></tr>";
 
     public String getUserListHtml(Collection<User> userList) throws IOException {
